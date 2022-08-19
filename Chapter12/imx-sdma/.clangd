@@ -1,0 +1,2 @@
+CompileFlags:
+  Remove: [-mrecord-mcount, -mpreferred-stack-boundary=3, -mindirect-branch=thunk-extern, -mindirect-branch-register, -mindirect-branch-cs-prefix, -fno-allow-store-data-races, -fconserve-stack, -ftrivial-auto-var-init=zero]
