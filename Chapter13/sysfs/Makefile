@@ -1,4 +1,4 @@
-obj-m := sysfs-poll.o
+obj-m := sysfs-test.o
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 
