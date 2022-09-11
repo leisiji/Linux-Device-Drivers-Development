@@ -1,6 +1,8 @@
+#include "linux/printk.h"
 #include <linux/interrupt.h> /* for tasklets api */
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/init.h>
 
 char tasklet_data[] = "We use a string; but it could be pointer to a structure";
 

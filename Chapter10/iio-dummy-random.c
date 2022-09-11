@@ -55,7 +55,7 @@ static const struct of_device_id iio_dummy_ids[] = {
 static const struct iio_info fake_iio_info = {
 	.read_raw = fake_read_raw,
 	.write_raw		= fake_write_raw,
-	.driver_module = THIS_MODULE,
+	// .driver_module = THIS_MODULE,
 };
 
 static int my_pdrv_probe (struct platform_device *pdev)

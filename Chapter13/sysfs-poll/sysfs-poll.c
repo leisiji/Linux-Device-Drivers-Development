@@ -1,9 +1,9 @@
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
 #include <linux/fs.h>
-#include <linux/slab.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
 #include <linux/kobject.h>
+#include <linux/module.h>
+#include <linux/slab.h>
 
 struct d_attr {
     struct attribute attr;
@@ -11,27 +11,28 @@ struct d_attr {
 };
 
 static struct d_attr notify = {
-    .attr.name="notify",
+    .attr.name = "notify",
     .attr.mode = 0644,
     .value = 0,
 };
 
 static struct d_attr trigger = {
-    .attr.name="trigger",
+    .attr.name = "trigger",
     .attr.mode = 0644,
     .value = 0,
 };
 
-static struct attribute * d_attrs[] = {
-    &notify.attr,
-    &trigger.attr,
-    NULL
+static struct attribute *d_attrs[] = {&notify.attr, &trigger.attr, NULL};
+static const struct attribute_group d_attr_grp = {.name = "sysfs-test", .attrs = d_attrs};
+static const struct attribute_group *d_attr_grps[] = {
+    &d_attr_grp,
+    NULL,
 };
 
 static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
     struct d_attr *da = container_of(attr, struct d_attr, attr);
-    pr_info( "hello: show called (%s)\n", da->attr.name );
+    pr_info("hello: show called (%s)\n", da->attr.name);
     return scnprintf(buf, PAGE_SIZE, "%s: %d\n", da->attr.name, da->value);
 }
 static struct kobject *mykobj;
@@ -43,11 +44,10 @@ static ssize_t store(struct kobject *kobj, struct attribute *attr, const char *b
     sscanf(buf, "%d", &da->value);
     pr_info("sysfs_notify store %s = %d\n", da->attr.name, da->value);
 
-    if (strcmp(da->attr.name, "notify") == 0){
+    if (strcmp(da->attr.name, "notify") == 0) {
         notify.value = da->value;
         sysfs_notify(mykobj, NULL, "notify");
-    }
-    else if(strcmp(da->attr.name, "trigger") == 0){
+    } else if (strcmp(da->attr.name, "trigger") == 0) {
         trigger.value = da->value;
         sysfs_notify(mykobj, NULL, "trigger");
     }
@@ -61,23 +61,23 @@ static struct sysfs_ops s_ops = {
 
 static struct kobj_type k_type = {
     .sysfs_ops = &s_ops,
-    .default_attrs = d_attrs,
+    .default_groups = d_attr_grps,
 };
 
 static struct kobject *mykobj;
+
 static int __init hello_module_init(void)
 {
     int err = -1;
-    pr_info("Pollable sysfs hello: init\n");
+
     mykobj = kzalloc(sizeof(*mykobj), GFP_KERNEL);
-    /* mykobj = kobject_create() is not exported */
     if (mykobj) {
         kobject_init(mykobj, &k_type);
         if (kobject_add(mykobj, NULL, "%s", "hello")) {
-             err = -1;
-             pr_info("Hello: kobject_add() failed\n");
-             kobject_put(mykobj);
-             mykobj = NULL;
+            err = -1;
+            pr_info("Hello: kobject_add() failed\n");
+            kobject_put(mykobj);
+            mykobj = NULL;
         }
         err = 0;
     }
